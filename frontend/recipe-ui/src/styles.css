@@ -1,0 +1,22 @@
+:root {
+  --bg: #0b0c10;
+  --panel: #0e1116;
+  --text: #e8ecef;
+  --muted: #9aa4ad;
+  --accent: #60a5fa;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 24px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.container { max-width: 720px; margin: 0 auto; }
+button { margin-left: 8px; }
+a { color: var(--accent); }
+
+
+

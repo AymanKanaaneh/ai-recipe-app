@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { RecipeResult } from '../shared/models/recipe.model';
 
 @Component({
   selector: 'app-upload',
@@ -8,7 +9,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class UploadComponent {
   selectedFile: File | null = null;
-  recipe: any = null;
+  recipe: RecipeResult | null = null;
   errorMessage = '';
   loading = false;
   isDragging = false;
@@ -55,9 +56,9 @@ export class UploadComponent {
 
     this.loading = true;
     this.errorMessage = '';
-    this.http.post('http://127.0.0.1:8000/api/generate-recipe/', formData).subscribe({
+    this.http.post('http://127.0.0.1:8000/api/recipes/generate/', formData).subscribe({
       next: (data) => {
-        this.recipe = data;
+        this.recipe = data as RecipeResult;
         this.loading = false;
       },
       error: (err) => {

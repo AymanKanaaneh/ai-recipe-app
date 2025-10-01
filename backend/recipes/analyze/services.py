@@ -40,7 +40,7 @@ def generate_recipe_from_image_bytes(client: genai.Client, image_bytes: bytes) -
         """
         Analyze the contents of this image.
         First, list all the main ingredients you see.
-        Second, suggest one simple, tasty recipe that uses at least three of the ingredients you identified.
+        Second, Suggest one complete recipe that could realistically match this meal.
         Provide the output strictly in the requested JSON format.
         """
     )

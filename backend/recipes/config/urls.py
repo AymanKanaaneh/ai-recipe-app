@@ -26,5 +26,5 @@ def root(request):
 urlpatterns = [
     path('', root, name='root'),
     path('admin/', admin.site.urls),
-    path('api/analyze/', include('analyze.urls')),
+    path('api/recipes/', include('analyze.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

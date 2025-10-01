@@ -1,0 +1,60 @@
+<div class="page">
+  <div class="container">
+  <h2 class="title">Upload Ingredients Image</h2>
+  <p class="subtitle">Drop a photo of ingredients and get an AI-generated recipe.</p>
+
+  <form (submit)="onSubmit($event)" class="card panel">
+    <div
+      class="dropzone"
+      [class.dragging]="isDragging"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+    >
+      <div class="dz-content">
+        <div class="icon">📷</div>
+        <div class="text">
+          <strong>Drag & drop</strong> an image here or
+          <label class="link">
+            browse
+            <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden />
+          </label>
+        </div>
+        <div class="hint">JPG, PNG, GIF up to 5MB</div>
+      </div>
+    </div>
+
+    <div class="preview" *ngIf="imagePreviewUrl">
+      <img [src]="imagePreviewUrl" alt="Selected image preview" />
+      <button type="button" class="btn ghost" (click)="clearSelection()">Remove</button>
+    </div>
+
+    <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+    <div class="actions">
+      <button type="submit" class="btn primary" [class.shake]="shake" [disabled]="loading" (click)="onTryButton($event)">
+        <span *ngIf="!loading">Get Recipe</span>
+        <span *ngIf="loading" class="spinner">
+          <span class="dot"></span>
+          Generating...
+        </span>
+      </button>
+    </div>
+  </form>
+
+  <div class="result card" *ngIf="recipe">
+    <h3>{{ recipe.suggested_recipe_name }}</h3>
+    <p><strong>Prep time:</strong> {{ recipe.prep_time_minutes }} minutes</p>
+    <h4>Ingredients</h4>
+    <ul>
+      <li *ngFor="let ing of recipe.identified_ingredients">{{ ing }}</li>
+    </ul>
+    <h4>Instructions</h4>
+    <ol>
+      <li *ngFor="let step of recipe.instructions">{{ step }}</li>
+    </ol>
+  </div>
+  </div>
+</div>
+
+

@@ -9,7 +9,6 @@ import { RecipeResult } from '../shared/models/recipe.model';
 })
 export class UploadComponent {
   selectedFile: File | null = null;
-  
   recipe: RecipeResult | null = null;
   errorMessage = '';
   loading = false;

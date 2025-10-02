@@ -56,7 +56,7 @@ export class UploadComponent {
 
     this.loading = true;
     this.errorMessage = '';
-    this.http.post('http://127.0.0.1:8000/api/recipes/generate/', formData).subscribe({
+    this.http.post('http://localhost:8000/api/recipes/generate/', formData).subscribe({
       next: (data) => {
         this.recipe = data as RecipeResult;
         this.loading = false;

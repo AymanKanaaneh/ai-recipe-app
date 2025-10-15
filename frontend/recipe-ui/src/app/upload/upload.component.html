@@ -39,6 +39,9 @@
           Generating...
         </span>
       </button>
+      <button type="button" class="btn secondary" (click)="toggleRecording()">
+        {{ isRecording ? 'Stop Speaking' : 'Speak with AI' }}
+      </button>
     </div>
   </form>
 

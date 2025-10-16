@@ -6,51 +6,84 @@ declare var webkitSpeechRecognition: any;
   providedIn: 'root',
 })
 export class VoiceRecognitionService {
-  recognition = new webkitSpeechRecognition();
-  isStoppedSpeechRecog = false;
+  private recognition = new webkitSpeechRecognition();
+  private isStoppedSpeechRecog = true;
+  private isStarting = false;
   tempWords: string = '';
   text: string = '';
+  private retryTimeout?: ReturnType<typeof setTimeout>;
 
   constructor() {
     this.recognition.interimResults = true;
+    this.recognition.continuous = true;
     this.recognition.lang = 'en-US';
   }
 
   public init() {
     this.recognition.addEventListener('result', (event: any) => {
-      const transcript = Array.from(event.results)
-        .map((result: any) => result[0])
-        .map((result: any) => result.transcript)
-        .join('');
-      this.tempWords = transcript;
-    });
-  }
-
-  public start() {
-    this.isStoppedSpeechRecog = false;
-    this.recognition.start();
-    console.log('Speech recognition started');
-
-    this.recognition.addEventListener('end', () => {
-      if (this.isStoppedSpeechRecog) {
-        this.recognition.stop();
-        console.log('End speech recognition');
-      } else {
-        this.wordConcat();
-        this.recognition.start();
+      if (event.results[0].isFinal) {
+        const transcript = Array.from(event.results)
+          .map((result: any) => result[0])
+          .map((result: any) => result.transcript)
+          .join('');
+        this.tempWords = transcript;
       }
     });
   }
 
+  public start() {
+    if (!this.isStoppedSpeechRecog || this.isStarting) return;
+    
+    this.isStarting = true;
+    this.isStoppedSpeechRecog = false;
+
+    const startAttempt = () => {
+      try {
+        this.recognition.start();
+        console.log('Continuous speech recognition started');
+        this.isStarting = false;
+      } catch (err) {
+        console.warn('Speech recognition start error:', err);
+        this.retryTimeout = setTimeout(startAttempt, 300);
+      }
+    };
+    
+    this.clearRetry();
+    startAttempt();
+
+    this.recognition.onerror = (event: any) => {
+      console.error('Recognition error:', event.error);
+      this.stop();
+    };
+  }
+
   public stop() {
+    if (this.isStoppedSpeechRecog) return;
+    
     this.isStoppedSpeechRecog = true;
+    this.clearRetry();
+    
+    try {
+      this.recognition.stop();
+      console.log('Speech recognition stopped');
+    } catch (e) {
+      console.warn('Stop error (harmless):', e);
+    }
+    
     this.wordConcat();
-    this.recognition.stop();
-    console.log('End speech recognition');
+  }
+
+  private clearRetry() {
+    if (this.retryTimeout) {
+      clearTimeout(this.retryTimeout);
+      this.retryTimeout = undefined;
+    }
   }
 
   public wordConcat() {
-    this.text = `${this.text} ${this.tempWords}.`;
-    this.tempWords = '';
+    if (this.tempWords.trim().length > 0) {
+      this.text += this.tempWords + '. ';
+      this.tempWords = '';
+    }
   }
 }

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { RecipeResult } from '../shared/models/recipe.model';
+import { VoiceRecognitionService } from '../service/voice-recognition.service';
 
 @Component({
   selector: 'app-upload',
@@ -15,8 +16,9 @@ export class UploadComponent {
   isDragging = false;
   imagePreviewUrl: string | null = null;
   shake = false;
+  userVoiceMessage = '';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, public voiceRecognitionService: VoiceRecognitionService) {}
 
   onFileSelected(event: Event) { this.handleFiles((event.target as HTMLInputElement)?.files); }
 
@@ -97,6 +99,38 @@ export class UploadComponent {
     const reader = new FileReader();
     reader.onload = () => { this.imagePreviewUrl = reader.result as string; };
     reader.readAsDataURL(file);
+  }
+
+  ngOnInit() {
+    this.voiceRecognitionService.init();
+  }
+
+  startRecording() {
+    this.voiceRecognitionService.start();
+  }
+
+  stopRecording() {
+    this.voiceRecognitionService.stop();
+    this.userVoiceMessage += this.voiceRecognitionService.text;
+    this.submitMessage();
+    this.voiceRecognitionService.text = ''; // Clear the recognized text after appending to userVoiceMessage
+  }
+
+  isRecording: boolean = false;
+
+  toggleRecording() {
+    this.isRecording = !this.isRecording;
+    if (this.isRecording) {
+      this.startRecording();
+    } else {
+      this.stopRecording();
+    }
+  }
+
+  submitMessage() {
+    // Handle userVoiceMessage submission logic here
+    console.log('Message submitted:', this.userVoiceMessage);
+    this.userVoiceMessage = ''; // Clear the input after submission
   }
 }
 

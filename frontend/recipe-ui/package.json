@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "ng serve --host 0.0.0.0 --disable-host-check",
-    "build": "ng build",
+    "build": "ng build --source-map=true",
     "test": "ng test"
   },
   "dependencies": {

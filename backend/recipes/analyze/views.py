@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 # Google GenAI SDK
 from google import genai
-from .services import generate_recipe_from_image_bytes
+from .services import generate_recipe_from_image_bytes, handle_recipe_question
 
 
 def _get_genai_client() -> genai.Client:
@@ -38,5 +38,30 @@ def generate_recipe_view(request: HttpRequest):
         return JsonResponse(data, status=200)
     except json.JSONDecodeError:
         return JsonResponse({"detail": "Model returned non-JSON response"}, status=502)
+    except Exception as exc:
+        return JsonResponse({"detail": str(exc)}, status=500)
+
+
+@csrf_exempt
+def handle_recipe_query_view(request: HttpRequest):
+    if request.method != 'POST':
+        return JsonResponse({"detail": "Only POST is allowed"}, status=405)
+
+    try:
+        body_data = json.loads(request.body.decode('utf-8'))
+        recipe_query = body_data.get('query')
+        recipe_data = body_data.get('recipe_data')
+        
+        if not recipe_query:
+            return JsonResponse({"detail": "Missing 'query' in request JSON"}, status=400)
+        if not recipe_data:
+            return JsonResponse({"detail": "Missing 'recipe_data' in request JSON"}, status=400)
+            
+        client = _get_genai_client()
+        data = handle_recipe_question(client, recipe_data, recipe_query)
+        return JsonResponse(data, status=200)
+        
+    except json.JSONDecodeError:
+        return JsonResponse({"detail": "Invalid JSON in request"}, status=400)
     except Exception as exc:
         return JsonResponse({"detail": str(exc)}, status=500)

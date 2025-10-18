@@ -1,7 +1,7 @@
 <div class="page">
   <div class="container">
-  <h2 class="title">Upload Ingredients Image</h2>
-  <p class="subtitle">Drop a photo of ingredients and get an AI-generated recipe.</p>
+  <h2 class="title">Upload Meal Image</h2>
+  <p class="subtitle">Drop a photo of a meal and get an AI-generated recipe.</p>
 
   <form (submit)="onSubmit($event)" class="card panel">
     <div
@@ -40,7 +40,7 @@
         </span>
       </button>
       <button type="button" class="btn secondary" (click)="toggleRecording()">
-        {{ isRecording ? 'Stop Speaking' : 'Speak with AI' }}
+        {{ isRecording ? 'Stop Speaking' : 'Ask About Meal' }}
       </button>
     </div>
   </form>
